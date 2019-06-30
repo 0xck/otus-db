@@ -17,7 +17,7 @@ case "$1" in
         echo "Usage: $0 [-n tag_name]"
         echo "Just execute $0 in directory which contains appropriate Dockerfile."
         echo "Change behaviour with following options:"
-        echo "-n <name> image tag and name. Default is otus_wrex_test_db."
+        echo "-n <name> image tag. Default is otus_wrex_test_db."
         exit 0 ;;
 
     *) echo "$1 is unknown option."
