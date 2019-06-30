@@ -1,41 +1,59 @@
 # Otus RDBMS study case
 
-This is RDBMS study case. Postgresql DB and study case schema *wrex* was packet into Docker image.
+This is RDBMS study case. Postgresql DB and study case schema *wrex* was packed into Docker image.
 
 > Note. Current version contains only schema not any data.
 
 ## Usage
+
 ### Requirements
 Check for system has `zcat` and `docker` installed.
 
-### Building
-#### Building process
+### Before start
 1. Download directory content
 2. Go to directory with downloaded content
-3. Add execution permission for building script using command `chmod +x build_image.sh`
-4. Run building script using command `./build_image.sh`
-5. Wait until script complete its work
+3. Add execution permission for deploy script using command `chmod +x deploy_image.sh`
+
+### Building and Running
+#### Only building
+If you need only build image, then use following steps:
+
+1. Run deploy script using command `./deploy_image.sh`
+2. Wait until script complete its work
 
 > Note. Make sure all downloaded content is located in working directory.
 
 #### Building settings
-You may change default image tag to other by using option `-n`. E.g. for set image tag to *My_Tag* use command `build_image.sh -n My_Tag`
+You may change default image tag to other by using option `-n`. E.g. for set image tag to *My_Tag* use command `deploy_image.sh -n My_Tag`
 
 > Note. By default container tag is *otus_wrex_test_db*.
 
-### Running
-#### Run container
-For running container use settings related to your system. E.g. for image tagged with default tag and external port 5432 it is following command:
+#### Build and Run
+If you need running container after building image, then use following steps:
+
+1. Run deploy script using command `./deploy_image.sh -r`
+2. Wait until script complete its work
+
+#### Running settings
+
+You may change default container external port to other by using option `-p`. E.g. Setting port to 5444:
 ```shell
-docker run -d -p 5432:5432 --name otus_wrex_test_db otus_wrex_test_db
+deploy_image.sh -r -p 5444
 ```
 
-#### Connection to DB
-##### Network settings
-For connection use network settings defined for container. Internal DB port is 5432, external is defined during container startup. E.g. if container was started locally with external port as 5432, then connection address might looks like *localhost:5432*.
+Also additional docker settings can be passed into script by using option `-d` and space separated string which contains options. E.g. Setting hostname to *my-container* and remove container after exit:
+```shell
+deploy_image.sh -r -d "-h my-container --rm"
+```
 
-##### Credentials
-For connection use DB name *postgres*, username *postgres* and password *postgres*
+> Note. Some options are already in use: `-d -p $port:5432 --name $tag $tag` they can not be changed.
 
-##### DB details
+### Connection to DB
+#### Network settings
+For connection use network settings defined for container. Internal DB port is 5432, external is defined with option `-p`. E.g. if container was started locally with external port as 5432, then connection address might looks like *localhost:5432*.
+
+#### Credentials
+For connection to DB use DB name *postgres*, username *postgres* and password *postgres*
+
+#### DB details
 DB study case schema is located in *wrex* schema.
