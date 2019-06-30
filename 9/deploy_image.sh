@@ -2,22 +2,37 @@
 
 tag_name="otus_wrex_test_db"
 init_file="schema.gz"
+port=5432
+run_container=0
+docker_opts=""
 
 while [ -n "$1" ]
 do
 case "$1" in
+    -d) docker_opts="$2"
+        shift ;;
 
     -n) tag_name="$2"
         shift ;;
+
+    -p) port="$2"
+        shift ;;
+
+    -r) run_container=1 ;;
+
 
     -h) echo "Build script for study case."
         echo "Script makes docker image using Dockerfile in current directory."
         echo "The image contains Postgresql DB with study case shema."
         echo
-        echo "Usage: $0 [-n tag_name]"
+        echo "Usage: $0 -d [\"docker extra options\"] [-n tag] [-p port] [-r]"
         echo "Just execute $0 in directory which contains appropriate Dockerfile."
         echo "Change behaviour with following options:"
-        echo "-n <name> image tag. Default is otus_wrex_test_db."
+        echo "-h            Show help message."
+        echo "-d <options>  Additional docker options as space separated string. Default options are -d -p --name."
+        echo "-n <tag>      Image tag. Default is otus_wrex_test_db."
+        echo "-p <port>     External port. Default is 5432."
+        echo "-r            Run builded container. Default is false."
         exit 0 ;;
 
     *) echo "$1 is unknown option."
@@ -25,6 +40,12 @@ case "$1" in
 esac
 shift
 done
+
+if [ $port -lt 1 ] || [ $port -gt 65355 ]
+then
+    echo "Wrong port value. Port has to belong to 1-65355 range.";
+    exit 1 ;
+fi
 
 
 if ! [ `which zcat` ]
@@ -45,7 +66,15 @@ then
     exit 1 ;
 fi
 
+echo "Building image started.";
 zcat $init_file > init.sql;
 docker build -t $tag_name . ;
+echo "Building image completed.";
+
+if [ $run_container -eq 1 ]
+then
+    echo "Running container started.";
+    docker run -d -p $port:5432 --name $tag_name $tag_name $docker_opts
+fi
 
 echo "Done."
