@@ -35,4 +35,7 @@ docker run -d -p 5432:5432 --name otus_wrex_test_db otus_wrex_test_db
 For connection use network settings defined for container. Internal DB port is 5432, external is defined during container startup. E.g. if container was started locally with external port as 5432, then connection address might looks like *localhost:5432*.
 
 ##### Credentials
-For connecting to DB use username *postgres* and password *postgres*
+For connection use DB name *postgres*, username *postgres* and password *postgres*
+
+##### DB details
+DB study case schema is located in *wrex* schema.
