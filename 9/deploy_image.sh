@@ -33,7 +33,7 @@ case "$1" in
         echo "Change behaviour with following options:"
         echo "-h            Show help message."
         echo "-d <options>  Additional docker options as space separated string. Default options are -d -p --name."
-        echo "-n <name>     Image name. Default is otus_wrex_test_db."
+        echo "-n <name>     Container name. Default is otus_wrex_test_db."
         echo "-p <port>     External port. Default is 5432."
         echo "-t <tag>      Image tag. Default is otus_wrex_test_db."
         echo "-R            Run built container. Default is not run."
@@ -76,7 +76,7 @@ echo "Building image completed.";
 
 if [ $run_container -eq 1 ]
 then
-    echo "Running container...";
+    echo "Starting container...";
     docker run -d -p $port:5432 --name $name $tag $docker_opts
 fi
 

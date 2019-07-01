@@ -24,9 +24,9 @@ If you need only build image, then use following steps:
 > Note. Make sure all downloaded content is located in working directory.
 
 #### Building settings
-You may change default image tag to other by using option `-n`. E.g. for set image tag to *My_Tag* use command `deploy_image.sh -n My_Tag`
+You may change default image tag to other by using option `-t`. E.g. for setting image tag to *My_Tag* use command `deploy_image.sh -t My_Tag`
 
-> Note. By default container tag is *otus_wrex_test_db*.
+> Note. By default image tag is *otus_wrex_test_db*.
 
 #### Build and Run
 If you need to run container after building image, then use following steps:
@@ -35,6 +35,9 @@ If you need to run container after building image, then use following steps:
 2. Wait until script complete its work
 
 #### Running settings
+You may change default container name to other by using option `-n`. E.g. for setting container name to *My_Name* use command `deploy_image.sh -R -n My_Name`
+
+> Note. By default container name is *otus_wrex_test_db*.
 
 You may change default container external port to other by using option `-p`. E.g. Setting port to 5444:
 ```shell
@@ -46,7 +49,7 @@ Also additional docker settings can be passed into script by using option `-d` a
 deploy_image.sh -R -d "-h my-container"
 ```
 
-> Note. Some options are already in use: `-d -p $port:5432 --name $tag $tag` they can not be changed.
+> Note. Some options are already in use: `-d -p $port:5432 --name $name $tag` they can not be changed.
 
 ### Connection to DB
 #### Network settings
