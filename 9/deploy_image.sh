@@ -51,6 +51,12 @@ then
     exit 1 ;
 fi
 
+if [ -z $tag ] || [ -z $name ]
+then
+    echo "Tag and name can not be empty.";
+    exit 1 ;
+fi
+
 if ! [ `which zcat` ]
 then
     echo "Zcat (part of gzip) was not found. Please install one first.";
