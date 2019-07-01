@@ -1,6 +1,7 @@
 #!/bin/sh
 
-tag_name="otus_wrex_test_db"
+tag="otus_wrex_test_db"
+name=$tag
 init_file="schema.gz"
 port=5432
 run_container=0
@@ -12,10 +13,13 @@ case "$1" in
     -d) docker_opts="$2"
         shift ;;
 
-    -n) tag_name="$2"
+    -n) name="$2"
         shift ;;
 
     -p) port="$2"
+        shift ;;
+
+    -t) tag="$2"
         shift ;;
 
     -R) run_container=1 ;;
@@ -24,13 +28,14 @@ case "$1" in
         echo "Script makes docker image using Dockerfile in current directory and optionally run one."
         echo "The image contains Postgresql DB with study case shema."
         echo
-        echo "Usage: $0 [-R] [-n tag] [-p port] [-d \"string of docker options\"]"
+        echo "Usage: $0 [-R] [-t tag] [-n name] [-p port] [-d \"string of docker options\"]"
         echo "Just execute $0 in directory which contains appropriate Dockerfile."
         echo "Change behaviour with following options:"
         echo "-h            Show help message."
         echo "-d <options>  Additional docker options as space separated string. Default options are -d -p --name."
-        echo "-n <tag>      Image tag. Default is otus_wrex_test_db."
+        echo "-n <name>     Image name. Default is otus_wrex_test_db."
         echo "-p <port>     External port. Default is 5432."
+        echo "-t <tag>      Image tag. Default is otus_wrex_test_db."
         echo "-R            Run built container. Default is not run."
         exit 0 ;;
 
@@ -66,13 +71,13 @@ fi
 
 echo "Building image started.";
 zcat $init_file > init.sql;
-docker build -t $tag_name . ;
+docker build -t $tag . ;
 echo "Building image completed.";
 
 if [ $run_container -eq 1 ]
 then
     echo "Running container...";
-    docker run -d -p $port:5432 --name $tag_name $tag_name $docker_opts
+    docker run -d -p $port:5432 --name $name $tag $docker_opts
 fi
 
 echo "Done."
