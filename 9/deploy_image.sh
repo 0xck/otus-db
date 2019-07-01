@@ -20,8 +20,8 @@ case "$1" in
 
     -R) run_container=1 ;;
 
-    -h) echo "Build script for study case."
-        echo "Script makes docker image using Dockerfile in current directory."
+    -h) echo "Deploy script for study case."
+        echo "Script makes docker image using Dockerfile in current directory and optionally run one."
         echo "The image contains Postgresql DB with study case shema."
         echo
         echo "Usage: $0 [-R] [-n tag] [-p port] [-d \"string of docker options\"]"
@@ -31,7 +31,7 @@ case "$1" in
         echo "-d <options>  Additional docker options as space separated string. Default options are -d -p --name."
         echo "-n <tag>      Image tag. Default is otus_wrex_test_db."
         echo "-p <port>     External port. Default is 5432."
-        echo "-R            Run builded container. Default is false."
+        echo "-R            Run built container. Default is not run."
         exit 0 ;;
 
     *) echo "$1 is unknown option."

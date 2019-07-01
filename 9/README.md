@@ -29,21 +29,21 @@ You may change default image tag to other by using option `-n`. E.g. for set ima
 > Note. By default container tag is *otus_wrex_test_db*.
 
 #### Build and Run
-If you need running container after building image, then use following steps:
+If you need to run container after building image, then use following steps:
 
-1. Run deploy script using command `./deploy_image.sh -r`
+1. Run deploy script using command `./deploy_image.sh -R`
 2. Wait until script complete its work
 
 #### Running settings
 
 You may change default container external port to other by using option `-p`. E.g. Setting port to 5444:
 ```shell
-deploy_image.sh -r -p 5444
+deploy_image.sh -R -p 5444
 ```
 
-Also additional docker settings can be passed into script by using option `-d` and space separated string which contains options. E.g. Setting hostname to *my-container* and remove container after exit:
+Also additional docker settings can be passed into script by using option `-d` and space separated string which contains options. E.g. Setting hostname to *my-container*:
 ```shell
-deploy_image.sh -r -d "-h my-container --rm"
+deploy_image.sh -R -d "-h my-container"
 ```
 
 > Note. Some options are already in use: `-d -p $port:5432 --name $tag $tag` they can not be changed.
