@@ -3,8 +3,9 @@
 USE voip;
 
 -- Deleting procedures for partitioning if they suddenly exist
-DROP PROCEDURE IF EXISTS generate_per_month_partitions;
+DROP PROCEDURE IF EXISTS partition_voip_cdr;
 DROP PROCEDURE IF EXISTS partition_existing_per_month;
+DROP PROCEDURE IF EXISTS generate_per_month_partitions;
 
 -- Loading procedures for partitioning into interesting DB
 DELIMITER $$
@@ -138,10 +139,40 @@ BEGIN
 
 END $$
 
+-- Additional procedure instead just CALL due handling exceptions needs
+DELIMITER $$
 
-CALL partition_existing_per_month('2018-01-01', 'voip', 'CDR', 'BILL_DATE');
+CREATE PROCEDURE partition_voip_cdr ()
+    MODIFIES SQL DATA
+    COMMENT 'Partition table voip.CDR per month. Returns tuple from state and message of result. 1 is done, 0 is some error happened, see message for details.'
 
+BEGIN
+    DECLARE code CHAR(5) DEFAULT '00000';
+    DECLARE err_msg TEXT;
+    DECLARE msg TEXT DEFAULT 'Done.';
+    DECLARE state TINYINT DEFAULT 0;
+
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1
+            code = RETURNED_SQLSTATE, err_msg = MESSAGE_TEXT;
+    END;
+
+    CALL partition_existing_per_month('2018-01-01', 'voip', 'CDR', 'BILL_DATE');
+
+    IF code = '00000' THEN
+        SET state = 1;
+    ELSE
+        SET msg = err_msg;
+    END IF;
+
+    SELECT state, msg;
+
+END $$
+
+CALL partition_voip_cdr();
 
 -- Deleting procedures for partitioning
-DROP PROCEDURE IF EXISTS generate_per_month_partitions;
+DROP PROCEDURE IF EXISTS partition_voip_cdr;
 DROP PROCEDURE IF EXISTS partition_existing_per_month;
+DROP PROCEDURE IF EXISTS generate_per_month_partitions;
