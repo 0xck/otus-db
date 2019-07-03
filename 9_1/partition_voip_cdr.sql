@@ -2,11 +2,14 @@
 
 USE voip;
 
+-- Deleting procedures for partitioning if they suddenly exist
+DROP PROCEDURE IF EXISTS generate_per_month_partitions;
+DROP PROCEDURE IF EXISTS partition_existing_per_month;
 
--- Loading procedures for partitioning
+-- Loading procedures for partitioning into interesting DB
 DELIMITER $$
 
-CREATE PROCEDURE `generate_per_month_partitions` (
+CREATE PROCEDURE generate_per_month_partitions (
     IN init_date DATE,
     IN table_name_ TEXT,
     IN db_engine TEXT,
@@ -82,7 +85,7 @@ END $$
 
 DELIMITER $$
 
-CREATE PROCEDURE `partition_exist_per_month` (
+CREATE PROCEDURE partition_existing_per_month (
     IN init_date DATE,
     IN schema_ TEXT,
     IN table_name_ TEXT,
@@ -92,7 +95,7 @@ CREATE PROCEDURE `partition_exist_per_month` (
 
 BEGIN
     DECLARE current_month, current_year,  init_month, init_year INT DEFAULT 0;
-    DECLARE db_engine, sql_code, res TEXT DEFAULT '';
+    DECLARE db_engine, sql_code, pregenerated_sql TEXT DEFAULT '';
     DECLARE current_date_ DATE DEFAULT CURRENT_DATE();
 
     SET current_month = MONTH(current_date_);
@@ -125,20 +128,20 @@ BEGIN
     SET sql_code = CONCAT('ALTER TABLE ', CONCAT(schema_, '.', table_name_), ' PARTITION BY RANGE COLUMNS(', column_name, ' ) (');
 
     CALL generate_per_month_partitions(CONCAT_WS('-', init_year, init_month, '1'),
-                                       table_name_, db_engine, sql_code, res);
+                                       table_name_, db_engine, sql_code, pregenerated_sql);
 
-    SET @ress = CONCAT(res, ')');
+    SET @generated_sql = CONCAT(pregenerated_sql, ')');
 
-    PREPARE cmd FROM @ress;
-    EXECUTE cmd;
-    DEALLOCATE PREPARE cmd;
+    PREPARE sql_cmd FROM @generated_sql;
+    EXECUTE sql_cmd;
+    DEALLOCATE PREPARE sql_cmd;
 
 END $$
 
 
-CALL partition_exist_per_month('2018-01-01', 'voip', 'CDR', 'BILL_DATE');
+CALL partition_existing_per_month('2018-01-01', 'voip', 'CDR', 'BILL_DATE');
 
 
 -- Deleting procedures for partitioning
-DROP PROCEDURE IF EXISTS `generate_per_month_partitions`;
-DROP PROCEDURE IF EXISTS `partition_exist_per_month`;
+DROP PROCEDURE IF EXISTS generate_per_month_partitions;
+DROP PROCEDURE IF EXISTS partition_existing_per_month;
